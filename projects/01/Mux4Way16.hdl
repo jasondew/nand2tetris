@@ -1,0 +1,35 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/01/Mux4Way16.hdl
+
+/**
+ * 4-way 16-bit multiplexor:
+ * out = a if sel == 00
+ *       b if sel == 01
+ *       c if sel == 10
+ *       d if sel == 11
+ */
+
+CHIP Mux4Way16 {
+    IN a[16], b[16], c[16], d[16], sel[2];
+    OUT out[16];
+
+    PARTS:
+    Not(in=sel[0], out=notSel0);
+    Not(in=sel[1], out=notSel1);
+
+    And(a=notSel0, b=notSel1, out=aSel);
+    And(a=sel[0], b=notSel1, out=bSel);
+    And(a=notSel0, b=sel[1], out=cSel);
+    And(a=sel[0], b=sel[1], out=dSel);
+
+    And16(a=a, b[0]=aSel, b[1]=aSel, b[2]=aSel, b[3]=aSel, b[4]=aSel, b[5]=aSel, b[6]=aSel, b[7]=aSel, b[8]=aSel, b[9]=aSel, b[10]=aSel, b[11]=aSel, b[12]=aSel, b[13]=aSel, b[14]=aSel, b[15]=aSel, out=aOut);
+    And16(a=b, b[0]=bSel, b[1]=bSel, b[2]=bSel, b[3]=bSel, b[4]=bSel, b[5]=bSel, b[6]=bSel, b[7]=bSel, b[8]=bSel, b[9]=bSel, b[10]=bSel, b[11]=bSel, b[12]=bSel, b[13]=bSel, b[14]=bSel, b[15]=bSel, out=bOut);
+    And16(a=c, b[0]=cSel, b[1]=cSel, b[2]=cSel, b[3]=cSel, b[4]=cSel, b[5]=cSel, b[6]=cSel, b[7]=cSel, b[8]=cSel, b[9]=cSel, b[10]=cSel, b[11]=cSel, b[12]=cSel, b[13]=cSel, b[14]=cSel, b[15]=cSel, out=cOut);
+    And16(a=d, b[0]=dSel, b[1]=dSel, b[2]=dSel, b[3]=dSel, b[4]=dSel, b[5]=dSel, b[6]=dSel, b[7]=dSel, b[8]=dSel, b[9]=dSel, b[10]=dSel, b[11]=dSel, b[12]=dSel, b[13]=dSel, b[14]=dSel, b[15]=dSel, out=dOut);
+
+    Or16(a=aOut, b=bOut, out=ab);
+    Or16(a=ab, b=cOut, out=abc);
+    Or16(a=abc, b=dOut, out=out);
+}

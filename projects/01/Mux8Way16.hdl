@@ -1,0 +1,55 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/01/Mux8Way16.hdl
+
+/**
+ * 8-way 16-bit multiplexor:
+ * out = a if sel == 000
+ *       b if sel == 001
+ *       etc.
+ *       h if sel == 111
+ */
+
+CHIP Mux8Way16 {
+    IN a[16], b[16], c[16], d[16],
+       e[16], f[16], g[16], h[16],
+       sel[3];
+    OUT out[16];
+
+    PARTS:
+    Not(in=sel[0], out=notSel0);
+    Not(in=sel[1], out=notSel1);
+    Not(in=sel[2], out=notSel2);
+
+    And(a=notSel2, b=notSel1, out=zeroZero);
+    And(a=notSel2, b=sel[1], out=zeroOne);
+    And(a=sel[2], b=notSel1, out=oneZero);
+    And(a=sel[2], b=sel[1], out=oneOne);
+
+    And(a=zeroZero, b=notSel0, out=aSel);
+    And(a=zeroZero, b=sel[0], out=bSel);
+    And(a=zeroOne, b=notSel0, out=cSel);
+    And(a=zeroOne, b=sel[0], out=dSel);
+    And(a=oneZero, b=notSel0, out=eSel);
+    And(a=oneZero, b=sel[0], out=fSel);
+    And(a=oneOne, b=notSel0, out=gSel);
+    And(a=oneOne, b=sel[0], out=hSel);
+
+    And16(a=a, b[0]=aSel, b[1]=aSel, b[2]=aSel, b[3]=aSel, b[4]=aSel, b[5]=aSel, b[6]=aSel, b[7]=aSel, b[8]=aSel, b[9]=aSel, b[10]=aSel, b[11]=aSel, b[12]=aSel, b[13]=aSel, b[14]=aSel, b[15]=aSel, out=aOut);
+    And16(a=b, b[0]=bSel, b[1]=bSel, b[2]=bSel, b[3]=bSel, b[4]=bSel, b[5]=bSel, b[6]=bSel, b[7]=bSel, b[8]=bSel, b[9]=bSel, b[10]=bSel, b[11]=bSel, b[12]=bSel, b[13]=bSel, b[14]=bSel, b[15]=bSel, out=bOut);
+    And16(a=c, b[0]=cSel, b[1]=cSel, b[2]=cSel, b[3]=cSel, b[4]=cSel, b[5]=cSel, b[6]=cSel, b[7]=cSel, b[8]=cSel, b[9]=cSel, b[10]=cSel, b[11]=cSel, b[12]=cSel, b[13]=cSel, b[14]=cSel, b[15]=cSel, out=cOut);
+    And16(a=d, b[0]=dSel, b[1]=dSel, b[2]=dSel, b[3]=dSel, b[4]=dSel, b[5]=dSel, b[6]=dSel, b[7]=dSel, b[8]=dSel, b[9]=dSel, b[10]=dSel, b[11]=dSel, b[12]=dSel, b[13]=dSel, b[14]=dSel, b[15]=dSel, out=dOut);
+    And16(a=e, b[0]=eSel, b[1]=eSel, b[2]=eSel, b[3]=eSel, b[4]=eSel, b[5]=eSel, b[6]=eSel, b[7]=eSel, b[8]=eSel, b[9]=eSel, b[10]=eSel, b[11]=eSel, b[12]=eSel, b[13]=eSel, b[14]=eSel, b[15]=eSel, out=eOut);
+    And16(a=f, b[0]=fSel, b[1]=fSel, b[2]=fSel, b[3]=fSel, b[4]=fSel, b[5]=fSel, b[6]=fSel, b[7]=fSel, b[8]=fSel, b[9]=fSel, b[10]=fSel, b[11]=fSel, b[12]=fSel, b[13]=fSel, b[14]=fSel, b[15]=fSel, out=fOut);
+    And16(a=g, b[0]=gSel, b[1]=gSel, b[2]=gSel, b[3]=gSel, b[4]=gSel, b[5]=gSel, b[6]=gSel, b[7]=gSel, b[8]=gSel, b[9]=gSel, b[10]=gSel, b[11]=gSel, b[12]=gSel, b[13]=gSel, b[14]=gSel, b[15]=gSel, out=gOut);
+    And16(a=h, b[0]=hSel, b[1]=hSel, b[2]=hSel, b[3]=hSel, b[4]=hSel, b[5]=hSel, b[6]=hSel, b[7]=hSel, b[8]=hSel, b[9]=hSel, b[10]=hSel, b[11]=hSel, b[12]=hSel, b[13]=hSel, b[14]=hSel, b[15]=hSel, out=hOut);
+
+    Or16(a=aOut, b=bOut, out=ab);
+    Or16(a=ab, b=cOut, out=abc);
+    Or16(a=abc, b=dOut, out=abcd);
+    Or16(a=abcd, b=eOut, out=abcde);
+    Or16(a=abcde, b=fOut, out=abcdef);
+    Or16(a=abcdef, b=gOut, out=abcdefg);
+    Or16(a=abcdefg, b=hOut, out=out);
+}
