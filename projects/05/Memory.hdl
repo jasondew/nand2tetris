@@ -22,10 +22,25 @@
  * Screen and Keyboard chip specifications given in the book.
  */
 
+ /*
+ 0x0000 => 0000000 00000000
+ 0x3FFF => 0111111 11111111
+ 0x4000 => 1000000 00000000
+ 0x5FFF => 1011111 11111111
+ 0x6000 => 1100000 00000000
+ */
+
 CHIP Memory {
     IN in[16], load, address[15];
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    DMux4Way(in=load, sel=address[13..14], a=loadRamA, b=loadRamB, c=loadScreen, d=unused);
+    Or(a=loadRamA, b=loadRamB, out=loadRam);
+
+    RAM16K(in=in, load=loadRam, address=address[0..13], out=ramOut);
+    Screen(in=in, load=loadScreen, address=address[0..12], out=screenOut);
+    Keyboard(out=keyboardOut);
+
+    Mux4Way16(a=ramOut, b=ramOut, c=screenOut, d=keyboardOut, sel=address[13..14], out=out);
 }

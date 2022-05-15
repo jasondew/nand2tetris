@@ -25,6 +25,23 @@
  * than to the address resulting from executing the current instruction. 
  */
 
+ /*
+ A instruction (leftmost bit is 0), interpret lower 15 bits as binary value
+ C instruction (leftmost bit is 1): 1xxaccccccdddjjj
+     the a-bit determines whether the ALU input will be fed from the A register value or from the incoming M value.
+     the cccccc bits determine which function the ALU will compute
+
+         MDA
+     the ddd bits code the dest part of the instruction
+     the ddd bits determine which registers should accept the ALU output
+
+         <=>
+     the jjj bits code the jump part of the instruction
+     the jjj bits are used for determining which instruction to fetch next
+
+     the xx bits are ignored
+ */
+
 CHIP CPU {
 
     IN  inM[16],         // M value input  (M = contents of RAM[A])
@@ -39,5 +56,30 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    // Put your code here:
+    Mux16(a=instruction, b=aluOut, sel=instruction[15], out=aIn);
+
+    And(a=instruction[3], b=instruction[15], out=writeM);
+    And(a=instruction[4], b=instruction[15], out=loadD);
+    Not(in=instruction[15], out=aInstr);
+    Or(a=instruction[5], b=aInstr, out=loadA);
+    DRegister(in=aluOut, load=loadD, out=dOut);
+    ARegister(in=aIn, load=loadA, out=aOut);
+
+    Mux16(a=aOut, b=inM, sel=instruction[12], out=aluIn);
+    ALU(x=dOut, y=aluIn, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6], out=aluOut, zr=zero, ng=negative);
+
+    Mux16(a=aOut, b=false, sel=false, out[0..14]=addressM);
+    Mux16(a=aluOut, b=false, sel=false, out=outM);
+
+    // compute jumps
+    Or(a=negative, b=zero, out=negativeOrZero);
+    Not(in=negativeOrZero, out=positive);
+    And(a=instruction[0], b=positive, out=jumpGT);
+    And(a=instruction[1], b=zero, out=jumpZero);
+    And(a=instruction[2], b=negative, out=jumpLT);
+    Or(a=jumpGT, b=jumpZero, out=jumpGTE);
+    Or(a=jumpGTE, b=jumpLT, out=jumpAny);
+    And(a=jumpAny, b=instruction[15], out=jump);
+
+    PC(in=aOut, load=jump, inc=true, reset=reset, out[0..14]=pc);
 }
