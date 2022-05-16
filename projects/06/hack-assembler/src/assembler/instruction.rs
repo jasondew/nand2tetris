@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub enum Instruction {
     AInstruction(u16),
     CInstruction {
@@ -7,12 +8,26 @@ pub enum Instruction {
     },
 }
 
+#[derive(Debug)]
+pub enum ParsedInstruction {
+    AInstructionWithSymbol(String),
+    AInstructionWithNumber(u16),
+    CInstruction {
+        destinations: Vec<Destination>,
+        computation: Computation,
+        jump: Option<JumpCondition>,
+    },
+    Label(String),
+}
+
+#[derive(Debug)]
 pub enum Destination {
     Memory,
     DRegister,
     ARegister,
 }
 
+#[derive(Debug)]
 pub enum Computation {
     Zero,
     One,
@@ -34,6 +49,7 @@ pub enum Computation {
     DRegisterOrMemory,
 }
 
+#[derive(Debug)]
 pub enum JumpCondition {
     JumpIfGreaterThan,
     JumpIfEqual,
