@@ -11,6 +11,12 @@ pub enum Instruction {
     And,
     Or,
     Not,
+    Label(String),
+    Goto(String),
+    IfGoto(String),
+    Function(String, u16),
+    Call(String, u16),
+    Return,
 }
 
 #[derive(Debug)]

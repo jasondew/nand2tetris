@@ -1,24 +1,39 @@
 use crate::translator::instruction::*;
 
-pub fn parse(line: &str) -> Instruction {
+pub fn parse<S>(line: S) -> Instruction
+where
+    S: Into<String>,
+{
+    use Instruction::*;
+
+    let line = line.into();
+    let line = match line.split_once("//") {
+        Some((instruction, _comment)) => instruction,
+        None => line.as_str(),
+    };
+
     match line.split_whitespace().collect::<Vec<&str>>()[..] {
-        ["add"] => Instruction::Add,
-        ["sub"] => Instruction::Subtract,
-        ["neg"] => Instruction::Negate,
-        ["eq"] => Instruction::Equal,
-        ["gt"] => Instruction::GreaterThan,
-        ["lt"] => Instruction::LessThan,
-        ["and"] => Instruction::And,
-        ["or"] => Instruction::Or,
-        ["not"] => Instruction::Not,
-        ["push", segment, index_or_value] => Instruction::Push(
-            parse_segment(segment),
-            parse_number(index_or_value),
-        ),
-        ["pop", segment, index_or_value] => Instruction::Pop(
-            parse_segment(segment),
-            parse_number(index_or_value),
-        ),
+        ["add"] => Add,
+        ["sub"] => Subtract,
+        ["neg"] => Negate,
+        ["eq"] => Equal,
+        ["gt"] => GreaterThan,
+        ["lt"] => LessThan,
+        ["and"] => And,
+        ["or"] => Or,
+        ["not"] => Not,
+        ["push", segment, index_or_value] => {
+            Push(parse_segment(segment), parse_number(index_or_value))
+        }
+        ["pop", segment, index_or_value] => {
+            Pop(parse_segment(segment), parse_number(index_or_value))
+        }
+        ["label", name] => Label(name.into()),
+        ["goto", name] => Goto(name.into()),
+        ["if-goto", name] => IfGoto(name.into()),
+        ["function", name, arity] => Function(name.into(), parse_number(arity)),
+        ["call", name, arity] => Call(name.into(), parse_number(arity)),
+        ["return"] => Return,
         _ => panic!("unknown instruction: {}", line),
     }
 }
