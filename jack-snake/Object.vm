@@ -1,0 +1,38 @@
+function Object.new 0
+push constant 1
+call Memory.alloc 1
+pop pointer 0
+push constant 50
+push constant 50
+call Position.new 2
+pop this 0
+push pointer 0
+return
+function Object.dispose 0
+push argument 0
+pop pointer 0
+push this 0
+call Position.dispose 1
+pop temp 0
+push pointer 0
+call Memory.deAlloc 1
+pop temp 0
+push constant 0
+return
+function Object.getPosition 0
+push argument 0
+pop pointer 0
+push this 0
+return
+function Object.draw 0
+push argument 0
+pop pointer 0
+push this 0
+call Position.getX 1
+push this 0
+call Position.getY 1
+push constant 2
+call Screen.drawCircle 3
+pop temp 0
+push constant 0
+return

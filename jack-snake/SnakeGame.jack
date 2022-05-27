@@ -1,0 +1,76 @@
+class SnakeGame {
+  field Snake snake;
+  field Object object;
+  field int score;
+
+  constructor SnakeGame new() {
+    let snake = Snake.new();
+    let object = Object.new();
+    let score = 0;
+
+    return this;
+  }
+
+  method void dispose() {
+    do snake.dispose();
+    do object.dispose();
+    do Memory.deAlloc(this);
+
+    return;
+  }
+
+  method void drawScore() {
+    var String scoreString;
+
+    let scoreString = String.new(4);
+    do scoreString.setInt(score);
+
+    do Output.moveCursor(0, 53);
+    do Output.printString("Score: ");
+    do Output.moveCursor(0, 60);
+    do Output.printString(scoreString);
+    do Memory.deAlloc(scoreString);
+
+    return;
+  }
+
+  method void run() {
+    var char input;
+    var boolean gameOver;
+
+    let gameOver = false;
+
+    while (~gameOver) {
+      let input = Keyboard.keyPressed();
+
+      if (input = 130) { do snake.goLeft(); }
+      if (input = 132) { do snake.goRight(); }
+      if (input = 131) { do snake.goUp(); }
+      if (input = 133) { do snake.goDown(); }
+
+      if (Position.equal(snake.getHeadPosition(), object.getPosition())) {
+        do snake.grow();
+        let score = score + 1;
+        let object = Object.new();
+      } else {
+        if (snake.crossing()) {
+          let gameOver = true;
+        } else {
+          do snake.move();
+        }
+      }
+
+      do Screen.clearScreen();
+      do snake.draw();
+      do object.draw();
+      do drawScore();
+
+      do Sys.wait(10);
+    }
+
+    do Output.moveCursor(12, 27);
+    do Output.printString("GAME OVER");
+
+    return;
+  }
+}

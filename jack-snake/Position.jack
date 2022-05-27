@@ -1,0 +1,29 @@
+class Position {
+  field int x;
+  field int y;
+
+  constructor Position new(int xx, int yy) {
+    let x = xx;
+    let y = yy;
+
+    return this;
+  }
+
+  method void dispose() {
+    do Memory.deAlloc(this);
+
+    return;
+  }
+
+  method int getX() { return x; }
+  method int getY() { return y; }
+
+  function boolean equal(Position a, Position b) {
+    var boolean xEquals, yEquals;
+
+    let xEquals = (a.getX() = b.getX());
+    let yEquals = (a.getY() = b.getY());
+
+    return (xEquals & yEquals);
+  }
+}

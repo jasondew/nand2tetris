@@ -1,0 +1,24 @@
+class Object {
+  field Position position;
+
+  constructor Object new() {
+    let position = Position.new(50, 50);
+
+    return this;
+  }
+
+  method void dispose() {
+    do position.dispose();
+    do Memory.deAlloc(this);
+
+    return;
+  }
+
+  method Position getPosition() { return position; }
+
+  method void draw() {
+    do Screen.drawCircle(position.getX(), position.getY(), 2);
+
+    return;
+  }
+}
