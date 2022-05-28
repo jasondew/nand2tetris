@@ -2,11 +2,16 @@ class SnakeGame {
   field Snake snake;
   field Object object;
   field int score;
+  field String scoreString;
+
+  static String scoreLabel;
 
   constructor SnakeGame new() {
     let snake = Snake.new();
     let object = Object.new();
     let score = 0;
+    let scoreLabel = "Score: ";
+    let scoreString = String.new(10);
 
     return this;
   }
@@ -14,22 +19,19 @@ class SnakeGame {
   method void dispose() {
     do snake.dispose();
     do object.dispose();
+    do scoreLabel.dispose();
+    do scoreString.dispose();
     do Memory.deAlloc(this);
 
     return;
   }
 
   method void drawScore() {
-    var String scoreString;
-
-    let scoreString = String.new(4);
     do scoreString.setInt(score);
-
     do Output.moveCursor(0, 53);
-    do Output.printString("Score: ");
+    do Output.printString(scoreLabel);
     do Output.moveCursor(0, 60);
     do Output.printString(scoreString);
-    do Memory.deAlloc(scoreString);
 
     return;
   }
@@ -51,6 +53,7 @@ class SnakeGame {
       if (Position.equal(snake.getHeadPosition(), object.getPosition())) {
         do snake.grow();
         let score = score + 1;
+        do object.dispose();
         let object = Object.new();
       } else {
         if (snake.crossing()) {
@@ -65,7 +68,7 @@ class SnakeGame {
       do object.draw();
       do drawScore();
 
-      do Sys.wait(10);
+      do Sys.wait(15);
     }
 
     do Output.moveCursor(12, 27);
