@@ -1,19 +1,10 @@
+pub mod parser;
 pub mod tokenizer;
+pub mod debug;
 
-pub fn compile<S>(input: S) -> Vec<String>
+pub fn compile<S>(input: S) -> parser::Class
 where
     S: AsRef<str>,
 {
-    let _input: &str = input.as_ref();
-    vec![]
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_compiler() {
-        compile("");
-    }
+    parser::parse(input)
 }

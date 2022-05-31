@@ -1,16 +1,16 @@
 use jack_compiler::compiler::debug;
-use jack_compiler::compiler::tokenizer;
+use jack_compiler::compiler::parser;
 use std::env;
 use std::fs;
 use std::io::prelude::*;
 
-fn tokenize<S>(path: S)
+fn parse<S>(path: S)
 where
     S: AsRef<str>,
 {
     if let Ok(contents) = read_file(&path) {
-        let tokens = tokenizer::tokenize(contents);
-        debug::print_tokens(tokens);
+        let class = parser::parse(contents);
+        debug::print_class(class)
     } else {
         panic!("ERROR: unable to read file {}", path.as_ref());
     }
@@ -28,8 +28,8 @@ where
 
 fn main() {
     if let Some(path) = env::args().nth(1) {
-        tokenize(path);
+        parse(path);
     } else {
-        println!("USAGE: ./tokenize Foo.jack");
+        println!("USAGE: ./parse Foo.jack");
     }
 }

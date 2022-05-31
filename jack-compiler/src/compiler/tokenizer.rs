@@ -10,6 +10,12 @@ pub enum Token {
     Identifier(String),
 }
 
+impl AsRef<Token> for Token {
+    fn as_ref(&self) -> &Token {
+        self
+    }
+}
+
 pub fn tokenize<S>(input: S) -> Vec<Token>
 where
     S: AsRef<str>,
@@ -71,7 +77,7 @@ fn parse_integer_constant(
 ) -> Token {
     let digits: String = read_until_non_numeric(first_digit, chars);
 
-    Token::IntegerConstant(u16::from_str_radix(&digits, 10).unwrap())
+    Token::IntegerConstant(digits.parse::<u16>().unwrap())
 }
 
 fn parse_string_constant(chars: &mut Peekable<Chars>) -> Token {
