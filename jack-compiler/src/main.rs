@@ -1,49 +1,53 @@
+use jack_compiler::compiler;
 use std::env;
 use std::fs;
-use std::io::prelude::*;
-// use std::path::Path;
+use std::path::Path;
 
 fn compile<S>(path: S)
 where
-    S: AsRef<str>,
+    S: AsRef<Path> + std::fmt::Display,
 {
-    if let Ok(contents) = read_file(&path) {
-        dbg!(compile(contents));
-    } else {
-        panic!("ERROR: unable to read file {}", path.as_ref());
+    match fs::read_to_string(&path) {
+        Ok(contents) => {
+            dbg!(compiler::compile(contents));
+        }
+        Err(error) => {
+            panic!("ERROR: unable to read file {}: {}", &path, error);
+        }
     }
 }
 
-fn read_file<S>(path: S) -> std::io::Result<String>
+fn compile_directory<S>(path: S)
 where
-    S: AsRef<str>,
+    S: AsRef<Path> + std::fmt::Display,
 {
-    let mut file = fs::File::open(path.as_ref())?;
-    let mut contents = String::new();
-    file.read_to_string(&mut contents)?;
-    Ok(contents)
+    match fs::read_dir(&path) {
+        Ok(read_dir) => {
+            for maybe_entry in read_dir {
+                match maybe_entry {
+                    Ok(entry) => {
+                        if entry.path().extension().unwrap() == "jack" {
+                            compile(entry.path().to_str().unwrap());
+                        }
+                    }
+                    Err(error) => {
+                        panic!("{:?}", error)
+                    }
+                }
+            }
+        }
+        Err(error) => {
+            panic!("{:?}", error)
+        }
+    }
 }
 
 fn main() {
     if let Some(path) = env::args().nth(1) {
-        match fs::read_dir(&path) {
-            Ok(read_dir) => {
-                for maybe_entry in read_dir {
-                    match maybe_entry {
-                        Ok(entry) => {
-                            if entry.path().extension().unwrap() == "jack" {
-                                compile(entry.path().to_str().unwrap());
-                            }
-                        }
-                        Err(error) => {
-                            panic!("{:?}", error);
-                        }
-                    }
-                }
-            }
-            Err(_) => {
-                compile(path);
-            }
+        if fs::metadata(&path).unwrap().is_dir() {
+            compile_directory(path);
+        } else {
+            compile(path);
         }
     } else {
         println!("USAGE: ./jack-compiler Foo.jack");
