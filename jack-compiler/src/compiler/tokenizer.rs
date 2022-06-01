@@ -111,48 +111,38 @@ fn read_until_non_identifier(
     first_char: char,
     chars: &mut Peekable<Chars>,
 ) -> String {
-    let mut read_chars = vec![first_char];
+    let mut identifier = format!("{first_char}");
 
-    while let Some(next_char) = chars.peek() {
-        if next_char.is_ascii_alphanumeric() || *next_char == '_' {
-            read_chars.push(chars.next().unwrap());
-        } else {
-            break;
-        }
+    while let Some(next_char) =
+        chars.next_if(|&c| c.is_ascii_alphanumeric() || c == '_')
+    {
+        identifier.push(next_char);
     }
 
-    read_chars.into_iter().collect()
+    identifier
 }
 
 fn read_until_non_numeric(
-    first_char: char,
+    first_digit: char,
     chars: &mut Peekable<Chars>,
 ) -> String {
-    let mut read_chars = vec![first_char];
+    let mut digits = format!("{first_digit}");
 
-    while let Some(next_char) = chars.peek() {
-        if next_char.is_numeric() {
-            read_chars.push(chars.next().unwrap());
-        } else {
-            break;
-        }
+    while let Some(next_digit) = chars.next_if(|&c| c.is_numeric()) {
+        digits.push(next_digit);
     }
 
-    read_chars.into_iter().collect()
+    digits
 }
 
 fn read_until(chars: &mut Peekable<Chars>, stop_char: char) -> String {
-    let mut string_chars = vec![];
+    let mut string = String::new();
 
-    while let Some(next_char) = chars.peek() {
-        if *next_char == stop_char {
-            break;
-        } else {
-            string_chars.push(chars.next().unwrap());
-        }
+    while let Some(next_char) = chars.next_if(|&c| c != stop_char) {
+        string.push(next_char);
     }
 
-    string_chars.into_iter().collect::<String>()
+    string
 }
 
 fn discard_until(chars: &mut Peekable<Chars>, stop_char: char) {
