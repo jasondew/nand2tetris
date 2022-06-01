@@ -2,28 +2,17 @@ use jack_compiler::compiler::debug;
 use jack_compiler::compiler::parser;
 use std::env;
 use std::fs;
-use std::io::prelude::*;
+use std::path::Path;
 
 fn parse<S>(path: S)
 where
-    S: AsRef<str>,
+    S: AsRef<Path> + std::fmt::Display,
 {
-    if let Ok(contents) = read_file(&path) {
-        let class = parser::parse(contents);
-        debug::print_class(class)
+    if let Ok(contents) = fs::read_to_string(&path) {
+        debug::print_class(parser::parse(contents));
     } else {
-        panic!("ERROR: unable to read file {}", path.as_ref());
+        panic!("ERROR: unable to read file {path}");
     }
-}
-
-fn read_file<S>(path: S) -> std::io::Result<String>
-where
-    S: AsRef<str>,
-{
-    let mut file = fs::File::open(path.as_ref())?;
-    let mut contents = String::new();
-    file.read_to_string(&mut contents)?;
-    Ok(contents)
 }
 
 fn main() {

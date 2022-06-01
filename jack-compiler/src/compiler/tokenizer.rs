@@ -92,7 +92,7 @@ fn parse_multiline_comment(chars: &mut Peekable<Chars>) {
             discard_until_with_peek(chars, '*', '/');
         }
         Some(other) => {
-            panic!("unexpected '{}' while parsing multi-line comment", other)
+            panic!("unexpected '{other}' while parsing multi-line comment")
         }
         None => panic!("unexpected EoF while parsing multi-line comment"),
     }
@@ -102,7 +102,7 @@ fn parse_single_line_comment(chars: &mut Peekable<Chars>) {
     match chars.next() {
         Some('*') => discard_until(chars, '/'),
         Some('/') => discard_until(chars, '\n'),
-        Some(other) => panic!("unexpected '{}' while parsing comment", other),
+        Some(other) => panic!("unexpected '{other}' while parsing comment"),
         None => panic!("unexpected EoF while parsing comment"),
     }
 }
@@ -155,11 +155,11 @@ fn read_until(chars: &mut Peekable<Chars>, stop_char: char) -> String {
     string_chars.into_iter().collect::<String>()
 }
 
-fn discard_until(chars: &mut Peekable<Chars>, final_char: char) {
-    match chars.next() {
-        Some(next_char) if next_char == final_char => {}
-        Some(_) => discard_until(chars, final_char),
-        None => panic!("unexpected EoF while looking for '{}'", final_char),
+fn discard_until(chars: &mut Peekable<Chars>, stop_char: char) {
+    while let Some(next_char) = chars.next() {
+        if next_char == stop_char {
+            return;
+        }
     }
 }
 
@@ -177,8 +177,7 @@ fn discard_until_with_peek(
         }
         Some(_) => discard_until_with_peek(chars, penultimate_char, final_char),
         None => panic!(
-            "unexpected EoF while looking for '{}{}'",
-            penultimate_char, final_char
+            "unexpected EoF while looking for '{penultimate_char}{final_char}'"
         ),
     }
 }

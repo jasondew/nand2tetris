@@ -259,7 +259,7 @@ fn parse_return_type(tokens: &mut Tokens) -> SubroutineReturnType {
                 consume_token(tokens);
                 SubroutineReturnType::Void
             }
-            _ => panic!("Expected void|type, got {:?}", keyword),
+            _ => panic!("Expected void|type, got {keyword:?}"),
         },
         _ => SubroutineReturnType::Returning(parse_data_type(tokens)),
     }
@@ -281,12 +281,12 @@ fn parse_parameters(tokens: &mut Tokens) -> Vec<Parameter> {
                     consume_token(tokens);
                     break;
                 }
-                _ => panic!("Expecting ( | , | ) got {}", symbol),
+                _ => panic!("Expecting ( | , | ) got {symbol}"),
             },
             Some(Token::Keyword(_)) => {
                 parameters.push(parse_parameter(tokens));
             }
-            token => panic!("Expecting parameter got {:?}", token),
+            token => panic!("Expecting parameter got {token:?}"),
         }
     }
 
@@ -355,12 +355,11 @@ fn parse_variable_declaration(tokens: &mut Tokens) -> VariableDeclaration {
                     consume_token(tokens);
                     break;
                 }
-                _ => panic!("Expected , | ; got {}", symbol),
+                _ => panic!("Expected , | ; got {symbol}"),
             },
             token => {
                 panic!(
-                    "Expected variable declaration identifier, got {:?}",
-                    token
+                    "Expected variable declaration identifier, got {token:?}"
                 )
             }
         }
@@ -508,7 +507,7 @@ fn parse_term(tokens: &mut Tokens) -> Term {
             "false" => Term::Keyword(KeywordConstant::False),
             "null" => Term::Keyword(KeywordConstant::Null),
             "this" => Term::Keyword(KeywordConstant::This),
-            _ => panic!("Expected true|false|null|this, got {:?}", value),
+            _ => panic!("Expected true|false|null|this, got {value}"),
         },
         Some(Token::Identifier(name)) => match tokens.peek() {
             Some(Token::Symbol(symbol)) => match symbol.as_ref() {
@@ -537,7 +536,7 @@ fn parse_term(tokens: &mut Tokens) -> Term {
                 let term = parse_term(tokens);
                 Term::Not(Box::new(term))
             }
-            _ => panic!("Expected ( | - | ~, got {:?}", symbol),
+            _ => panic!("Expected ( | - | ~, got {symbol:?}"),
         },
         None => panic!("Expected term, got EoF"),
     }
@@ -555,9 +554,9 @@ fn parse_operation(tokens: &mut Tokens) -> Operation {
             "<" => Operation::LessThan,
             ">" => Operation::GreaterThan,
             "=" => Operation::Equals,
-            _ => panic!("Expected +|-|*|/|&|||<|>|=, got {:?}", symbol),
+            _ => panic!("Expected +|-|*|/|&|||<|>|=, got {symbol:?}"),
         },
-        token => panic!("Expected operation, got {:?}", token),
+        token => panic!("Expected operation, got {token:?}"),
     }
 }
 
@@ -570,9 +569,9 @@ fn parse_call(tokens: &mut Tokens, identifier: String) -> Term {
                 consume(tokens, Token::Symbol("(".into()));
                 (Some(identifier), name)
             }
-            _ => panic!("Expected ( | ., got {}", symbol),
+            _ => panic!("Expected ( | ., got {symbol}"),
         },
-        token => panic!("Expected ( | ., got {:?}", token),
+        token => panic!("Expected ( | ., got {token:?}"),
     };
     let mut expressions = Vec::new();
 
@@ -601,10 +600,10 @@ fn parse_data_type(tokens: &mut Tokens) -> DataType {
             "int" => DataType::Int,
             "char" => DataType::Char,
             "boolean" => DataType::Boolean,
-            _ => panic!("Expected data type, got {:?}", name),
+            _ => panic!("Expected data type, got {name:?}"),
         },
         Some(Token::Identifier(name)) => DataType::Class(name.clone()),
-        Some(token) => panic!("Expected data type, got {:?}", token),
+        Some(token) => panic!("Expected data type, got {token:?}"),
         None => panic!("Expected data type, got EoF"),
     }
 }
@@ -612,7 +611,7 @@ fn parse_data_type(tokens: &mut Tokens) -> DataType {
 fn parse_identifier(tokens: &mut Tokens) -> String {
     match tokens.next() {
         Some(Token::Identifier(name)) => name.clone(),
-        Some(token) => panic!("Expected identifier, got {:?}", token),
+        Some(token) => panic!("Expected identifier, got {token:?}"),
         None => panic!("Expected identifier, got EoF"),
     }
 }
@@ -623,10 +622,10 @@ where
 {
     if let Some(next_token) = tokens.next() {
         if next_token != expected_token.as_ref() {
-            panic!("Expected {:?}, got {:?}", expected_token, next_token);
+            panic!("Expected {expected_token:?}, got {next_token:?}");
         }
     } else {
-        panic!("Expected {:?}, got EoF", expected_token);
+        panic!("Expected {expected_token:?}, got EoF");
     }
 }
 

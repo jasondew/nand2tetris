@@ -12,7 +12,7 @@ where
             dbg!(compiler::compile(contents));
         }
         Err(error) => {
-            panic!("ERROR: unable to read file {}: {}", &path, error);
+            panic!("ERROR: unable to read file {path}: {error}");
         }
     }
 }
@@ -31,13 +31,13 @@ where
                         }
                     }
                     Err(error) => {
-                        panic!("{:?}", error)
+                        panic!("{error:?}")
                     }
                 }
             }
         }
         Err(error) => {
-            panic!("{:?}", error)
+            panic!("{error:?}")
         }
     }
 }

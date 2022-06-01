@@ -353,7 +353,7 @@ where
         .take(indent_count)
         .collect::<Vec<&str>>()
         .join("");
-    println!("{}<{}>", indent, name);
+    println!("{indent}<{name}>");
 }
 
 fn print_close_tag<S>(name: S, indent_count: usize)
@@ -366,7 +366,7 @@ where
         .take(indent_count)
         .collect::<Vec<&str>>()
         .join("");
-    println!("{}</{}>", indent, name);
+    println!("{indent}</{name}>");
 }
 
 fn print_element<S, T>(name: S, value: T, indent_count: usize)
@@ -380,7 +380,7 @@ where
         .take(indent_count)
         .collect::<Vec<&str>>()
         .join("");
-    println!("{}<{}> {} </{}>", indent, name, value, name);
+    println!("{indent}<{name}> {value} </{name}>");
 }
 
 fn escape(string: String) -> String {
