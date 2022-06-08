@@ -7,13 +7,12 @@ fn compile<S>(path: S)
 where
     S: AsRef<Path> + std::fmt::Display,
 {
-    match fs::read_to_string(&path) {
-        Ok(contents) => {
-            dbg!(compiler::compile(contents));
+    if let Ok(contents) = fs::read_to_string(&path) {
+        for instruction in compiler::compile(contents) {
+            println!("{instruction}");
         }
-        Err(error) => {
-            panic!("ERROR: unable to read file {path}: {error}");
-        }
+    } else {
+        panic!("ERROR: unable to read {path}");
     }
 }
 
@@ -50,6 +49,6 @@ fn main() {
             compile(path);
         }
     } else {
-        println!("USAGE: ./jack-compiler Foo.jack");
+        println!("USAGE: ./compile <*.jack or directory>");
     }
 }

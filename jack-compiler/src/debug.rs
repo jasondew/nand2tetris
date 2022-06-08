@@ -1,5 +1,5 @@
-use crate::compiler::parser::*;
-use crate::compiler::tokenizer;
+use crate::parser::*;
+use crate::tokenizer;
 
 pub fn print_tokens(tokens: Vec<tokenizer::Token>) {
     print_open_tag("tokens", 0);

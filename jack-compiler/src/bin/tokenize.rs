@@ -1,5 +1,5 @@
-use jack_compiler::compiler::debug;
-use jack_compiler::compiler::tokenizer;
+use jack_compiler::debug;
+use jack_compiler::tokenizer;
 use std::env;
 use std::fs;
 use std::path::Path;

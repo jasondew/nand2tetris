@@ -1,4 +1,4 @@
-use crate::compiler::tokenizer::*;
+use crate::tokenizer::*;
 use std::fmt::Debug;
 use std::iter::Peekable;
 use std::slice::Iter;
@@ -35,7 +35,7 @@ pub enum ClassVariableScope {
     Field,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum DataType {
     Int,
     Char,
@@ -259,9 +259,9 @@ fn parse_return_type(tokens: &mut Tokens) -> SubroutineReturnType {
                 consume_token(tokens);
                 SubroutineReturnType::Void
             }
-            _ => panic!("Expected void|type, got {keyword:?}"),
+            _ => SubroutineReturnType::Returning(parse_data_type(tokens)),
         },
-        _ => SubroutineReturnType::Returning(parse_data_type(tokens)),
+        _ => panic!("Expected void|type, got nothing"),
     }
 }
 
