@@ -1,11 +1,17 @@
 use crate::parser::DataType;
 use std::collections::HashMap;
 
-type Kind = String;
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum Kind {
+    Variable,
+    Argument,
+    Field,
+    Static,
+}
 
 #[derive(Debug)]
-pub struct SymbolTable<'a> {
-    data: HashMap<&'a String, SymbolData>,
+pub struct SymbolTable {
+    data: HashMap<String, SymbolData>,
 }
 
 #[derive(Debug)]
@@ -15,15 +21,15 @@ pub struct SymbolData {
     pub kind: Kind,
 }
 
-impl<'a> SymbolTable<'a> {
+impl SymbolTable {
     pub fn new() -> Self {
         Self {
             data: HashMap::new(),
         }
     }
 
-    pub fn add(&mut self, name: &'a String, kind: Kind, data_type: DataType) {
-        let id = self.count_of(&kind) as u8;
+    pub fn add(&mut self, name: String, kind: Kind, data_type: DataType) {
+        let id = self.count_of(kind) as u8;
         let symbol_data = SymbolData {
             id,
             kind,
@@ -33,14 +39,21 @@ impl<'a> SymbolTable<'a> {
         self.data.insert(name, symbol_data);
     }
 
-    pub fn lookup(&self, name: &'a String) -> Option<&SymbolData> {
+    pub fn lookup(&self, name: &String) -> Option<&SymbolData> {
         self.data.get(name)
     }
 
-    pub fn count_of(&self, kind: &Kind) -> usize {
+    pub fn non_static_count(&self) -> usize {
         self.data
             .iter()
-            .filter(|(_name, symbol_data)| &symbol_data.kind == kind)
+            .filter(|(_name, symbol_data)| symbol_data.kind != Kind::Static)
+            .count()
+    }
+
+    pub fn count_of(&self, kind: Kind) -> usize {
+        self.data
+            .iter()
+            .filter(|(_name, symbol_data)| symbol_data.kind == kind)
             .count()
     }
 }

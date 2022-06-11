@@ -261,7 +261,10 @@ fn parse_return_type(tokens: &mut Tokens) -> SubroutineReturnType {
             }
             _ => SubroutineReturnType::Returning(parse_data_type(tokens)),
         },
-        _ => panic!("Expected void|type, got nothing"),
+        Some(Token::Identifier(_)) => {
+            SubroutineReturnType::Returning(parse_data_type(tokens))
+        }
+        other => panic!("Expected void|type, got {other:?}"),
     }
 }
 
@@ -283,7 +286,7 @@ fn parse_parameters(tokens: &mut Tokens) -> Vec<Parameter> {
                 }
                 _ => panic!("Expecting ( | , | ) got {symbol}"),
             },
-            Some(Token::Keyword(_)) => {
+            Some(Token::Keyword(_)) | Some(Token::Identifier(_)) => {
                 parameters.push(parse_parameter(tokens));
             }
             token => panic!("Expecting parameter got {token:?}"),
@@ -771,5 +774,27 @@ class Main {
 ",
         );
         assert_eq!(class.name, "Main");
+    }
+
+    #[test]
+    fn test_constructor() {
+        let class = parse(
+            "\
+class Square {
+   field int x;
+
+   constructor Square new(int Ax) {
+      let x = Ax;
+      return this;
+   }
+}
+",
+        );
+        dbg!(&class);
+        let declaration = class.subroutine_declarations.get(0).unwrap();
+        assert_eq!(
+            declaration.return_type,
+            SubroutineReturnType::Returning(DataType::Class("Square".into()))
+        );
     }
 }
